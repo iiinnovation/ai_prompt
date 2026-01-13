@@ -1,0 +1,59 @@
+{
+  "manifest_version": 3,
+  "name": "AI Prompt 模板助手",
+  "version": "1.0.0",
+  "description": "管理常用 Prompt 模板，在主流 AI 平台上一键注入到输入框",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png"
+    },
+    "default_title": "AI Prompt 模板助手"
+  },
+  "options_page": "options/options.html",
+  "background": {
+    "service_worker": "background/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://chat.openai.com/*",
+        "https://chatgpt.com/*",
+        "https://gemini.google.com/*",
+        "https://chat.deepseek.com/*",
+        "https://kimi.moonshot.cn/*",
+        "https://tongyi.aliyun.com/*"
+      ],
+      "js": ["content/platforms.js", "content/content.js"],
+      "css": ["content/content.css"]
+    }
+  ],
+  "permissions": [
+    "storage",
+    "activeTab",
+    "contextMenus"
+  ],
+  "host_permissions": [
+    "https://chat.openai.com/*",
+    "https://chatgpt.com/*",
+    "https://gemini.google.com/*",
+    "https://chat.deepseek.com/*",
+    "https://kimi.moonshot.cn/*",
+    "https://tongyi.aliyun.com/*"
+  ],
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+P",
+        "mac": "Command+Shift+P"
+      },
+      "description": "打开模板选择面板"
+    }
+  }
+}

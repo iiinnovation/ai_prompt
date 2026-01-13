@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Prompt 模板助手</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <div class="popup-header">
+      <input type="text" id="searchInput" class="search-input" placeholder="🔍 搜索模板..." autofocus>
+    </div>
+    
+    <div class="popup-categories" id="categories"></div>
+    
+    <div class="popup-sort">
+      <span>排序：</span>
+      <select id="sortSelect">
+        <option value="lastUsed">最近使用</option>
+        <option value="usageCount">最常用</option>
+        <option value="order">默认排序</option>
+      </select>
+    </div>
+    
+    <div class="popup-list" id="templateList"></div>
+    
+    <div class="popup-footer">
+      <button class="manage-btn" id="manageBtn">⚙️ 管理模板</button>
+    </div>
+  </div>
+  
+  <script src="../utils/storage.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

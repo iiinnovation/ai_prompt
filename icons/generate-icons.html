@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>生成图标</title>
+</head>
+<body>
+  <h2>生成扩展图标</h2>
+  <p>右键点击下方图标 → 另存为 → 保存到 icons 文件夹</p>
+  
+  <h3>icon16.png</h3>
+  <canvas id="c16" width="16" height="16"></canvas>
+  
+  <h3>icon48.png</h3>
+  <canvas id="c48" width="48" height="48"></canvas>
+  
+  <h3>icon128.png</h3>
+  <canvas id="c128" width="128" height="128"></canvas>
+
+  <script>
+    function drawIcon(canvas) {
+      const ctx = canvas.getContext('2d');
+      const size = canvas.width;
+      const radius = size * 0.15;
+      
+      const gradient = ctx.createLinearGradient(0, 0, size, size);
+      gradient.addColorStop(0, '#667eea');
+      gradient.addColorStop(1, '#764ba2');
+      
+      ctx.beginPath();
+      ctx.roundRect(0, 0, size, size, radius);
+      ctx.fillStyle = gradient;
+      ctx.fill();
+      
+      ctx.strokeStyle = 'white';
+      ctx.lineCap = 'round';
+      ctx.lineWidth = size * 0.08;
+      
+      const margin = size * 0.25;
+      const lineSpacing = size * 0.22;
+      
+      ctx.beginPath();
+      ctx.moveTo(margin, margin);
+      ctx.lineTo(size - margin, margin);
+      ctx.stroke();
+      
+      ctx.beginPath();
+      ctx.moveTo(margin, margin + lineSpacing);
+      ctx.lineTo(size - margin - size * 0.15, margin + lineSpacing);
+      ctx.stroke();
+      
+      ctx.beginPath();
+      ctx.moveTo(margin, margin + lineSpacing * 2);
+      ctx.lineTo(size - margin - size * 0.08, margin + lineSpacing * 2);
+      ctx.stroke();
+    }
+    
+    drawIcon(document.getElementById('c16'));
+    drawIcon(document.getElementById('c48'));
+    drawIcon(document.getElementById('c128'));
+    
+    ['c16', 'c48', 'c128'].forEach(id => {
+      const canvas = document.getElementById(id);
+      const img = new Image();
+      img.src = canvas.toDataURL('image/png');
+      img.style.border = '1px solid #ccc';
+      img.style.margin = '10px';
+      canvas.parentNode.insertBefore(img, canvas.nextSibling);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Prompt 模板助手 - 管理</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>AI Prompt 模板助手</h1>
+      <div class="header-actions">
+        <button class="btn btn-secondary" id="importBtn">📥 导入</button>
+        <button class="btn btn-secondary" id="exportBtn">📤 导出</button>
+      </div>
+    </header>
+
+    <div class="main-content">
+      <aside class="sidebar">
+        <div class="sidebar-section">
+          <h3>分类</h3>
+          <ul class="category-list" id="categoryList"></ul>
+          <button class="add-category-btn" id="addCategoryBtn">+ 新建分类</button>
+        </div>
+      </aside>
+
+      <main class="content">
+        <div class="content-header">
+          <div class="content-title">
+            <h2 id="currentCategoryTitle">全部模板</h2>
+            <span class="template-count" id="templateCount">0 个模板</span>
+          </div>
+          <div class="content-actions">
+            <button class="btn btn-primary" id="addTemplateBtn">+ 新增模板</button>
+            <button class="btn btn-secondary" id="batchAddBtn">+ 批量添加</button>
+          </div>
+        </div>
+
+        <div class="template-list" id="templateList"></div>
+      </main>
+
+      <aside class="detail-panel" id="detailPanel">
+        <div class="detail-header">
+          <h3 id="detailTitle">模板详情</h3>
+          <button class="close-btn" id="closeDetailBtn">×</button>
+        </div>
+        <div class="detail-content">
+          <div class="form-group">
+            <label>模板名称</label>
+            <input type="text" id="templateName" placeholder="输入模板名称">
+          </div>
+          <div class="form-group">
+            <label>分类</label>
+            <select id="templateCategory"></select>
+          </div>
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="templatePinned">
+              <span>置顶此模板</span>
+            </label>
+          </div>
+          <div class="form-group">
+            <label>模板内容</label>
+            <textarea id="templateContent" placeholder="输入模板内容" rows="10"></textarea>
+          </div>
+          <div class="template-stats" id="templateStats"></div>
+          <div class="detail-actions">
+            <button class="btn btn-danger" id="deleteTemplateBtn">删除</button>
+            <button class="btn btn-primary" id="saveTemplateBtn">保存</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="modal" id="batchModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>批量添加模板</h3>
+        <button class="close-btn" id="closeBatchModal">×</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-hint">每行一个模板，格式：模板名称 | 分类 | 内容（用 | 分隔）</p>
+        <textarea id="batchInput" rows="15" placeholder="代码审查 | 代码 | 请审查以下代码...
+翻译助手 | 翻译 | 请翻译以下内容..."></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancelBatchBtn">取消</button>
+        <button class="btn btn-primary" id="confirmBatchBtn">添加</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="importModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>导入模板</h3>
+        <button class="close-btn" id="closeImportModal">×</button>
+      </div>
+      <div class="modal-body">
+        <input type="file" id="importFile" accept=".json" style="display: none;">
+        <button class="btn btn-secondary" id="selectFileBtn">选择 JSON 文件</button>
+        <div class="import-preview" id="importPreview"></div>
+        <div class="conflict-options" id="conflictOptions" style="display: none;">
+          <p>发现重名模板，请选择处理方式：</p>
+          <label><input type="radio" name="conflict" value="skip" checked> 跳过已存在的</label>
+          <label><input type="radio" name="conflict" value="overwrite"> 覆盖已存在的</label>
+          <label><input type="radio" name="conflict" value="rename"> 重命名导入的</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancelImportBtn">取消</button>
+        <button class="btn btn-primary" id="confirmImportBtn" disabled>导入</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="../utils/storage.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>

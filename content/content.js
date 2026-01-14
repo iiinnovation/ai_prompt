@@ -6,6 +6,8 @@
   let settings = {};
   let currentCategory = '全部';
   let searchQuery = '';
+  let selectedIndex = -1;
+  let injectMode = 'replace';
 
   function showToast(message, type = 'success') {
     const existingToast = document.querySelector('.apt-toast');
@@ -74,7 +76,7 @@
   }
 
   async function injectTemplate(template) {
-    const success = window.PlatformHelper.injectContent(template.content);
+    const success = window.PlatformHelper.injectContent(template.content, injectMode);
     
     if (success) {
       template.usageCount = (template.usageCount || 0) + 1;
@@ -106,6 +108,10 @@
     quickPanel.innerHTML = `
       <div class="apt-panel-header">
         <input type="text" class="apt-search-input" placeholder="🔍 搜索模板..." />
+        <div class="apt-mode-toggle">
+          <button class="apt-mode-btn active" data-mode="replace">覆盖</button>
+          <button class="apt-mode-btn" data-mode="append">追加</button>
+        </div>
       </div>
       <div class="apt-panel-categories"></div>
       <div class="apt-panel-list"></div>
@@ -118,7 +124,16 @@
     const searchInput = quickPanel.querySelector('.apt-search-input');
     searchInput.addEventListener('input', (e) => {
       searchQuery = e.target.value;
+      selectedIndex = -1;
       renderTemplateList();
+    });
+
+    quickPanel.querySelectorAll('.apt-mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        quickPanel.querySelectorAll('.apt-mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        injectMode = btn.dataset.mode;
+      });
     });
 
     const manageBtn = quickPanel.querySelector('.apt-manage-btn');
@@ -182,14 +197,37 @@
   }
 
   function handleKeyboardNavigation(e) {
-    if (e.key >= '1' && e.key <= '9') {
+    const filtered = filterTemplates();
+    
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      selectedIndex = Math.min(selectedIndex + 1, Math.min(filtered.length - 1, 8));
+      updatePanelSelection();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      selectedIndex = Math.max(selectedIndex - 1, -1);
+      updatePanelSelection();
+    } else if (e.key === 'Enter' && selectedIndex >= 0 && filtered[selectedIndex]) {
+      e.preventDefault();
+      injectTemplate(filtered[selectedIndex]);
+    } else if (e.key >= '1' && e.key <= '9') {
       const index = parseInt(e.key) - 1;
-      const filtered = filterTemplates();
       if (filtered[index]) {
         injectTemplate(filtered[index]);
       }
     } else if (e.key === 'Escape') {
       hideQuickPanel();
+    }
+  }
+
+  function updatePanelSelection() {
+    const items = quickPanel.querySelectorAll('.apt-template-item');
+    items.forEach((item, i) => {
+      item.classList.toggle('selected', i === selectedIndex);
+    });
+    
+    if (selectedIndex >= 0 && items[selectedIndex]) {
+      items[selectedIndex].scrollIntoView({ block: 'nearest' });
     }
   }
 
@@ -199,6 +237,7 @@
     
     currentCategory = '全部';
     searchQuery = '';
+    selectedIndex = -1;
     
     renderCategories();
     renderTemplateList();
@@ -222,8 +261,9 @@
       sendResponse({ success: true });
     } else if (request.action === 'injectTemplate') {
       const template = request.template;
+      const mode = request.mode || 'replace';
       if (template) {
-        const success = window.PlatformHelper.injectContent(template.content);
+        const success = window.PlatformHelper.injectContent(template.content, mode);
         if (success) {
           showToast('模板已注入', 'success');
         } else {

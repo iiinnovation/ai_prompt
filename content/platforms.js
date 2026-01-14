@@ -70,7 +70,7 @@ function detectInputType(element) {
   return 'contenteditable';
 }
 
-function injectContent(content) {
+function injectContent(content, mode = 'replace') {
   const element = findInputElement();
   if (!element) {
     console.warn('[AI Prompt Helper] Input element not found');
@@ -81,18 +81,35 @@ function injectContent(content) {
   element.focus();
   
   if (inputType === 'textarea' || inputType === 'input') {
-    element.value = content;
+    if (mode === 'append') {
+      const cursorPos = element.selectionStart || element.value.length;
+      const before = element.value.substring(0, cursorPos);
+      const after = element.value.substring(cursorPos);
+      element.value = before + content + after;
+      const newPos = cursorPos + content.length;
+      element.setSelectionRange(newPos, newPos);
+    } else {
+      element.value = content;
+      element.setSelectionRange(content.length, content.length);
+    }
     element.dispatchEvent(new Event('input', { bubbles: true }));
     element.dispatchEvent(new Event('change', { bubbles: true }));
   } else {
-    element.innerHTML = '';
-    document.execCommand('insertText', false, content);
+    if (mode === 'append') {
+      const selection = window.getSelection();
+      if (selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        range.deleteContents();
+        range.insertNode(document.createTextNode(content));
+        range.collapse(false);
+      } else {
+        element.innerHTML += content;
+      }
+    } else {
+      element.innerHTML = '';
+      document.execCommand('insertText', false, content);
+    }
     element.dispatchEvent(new InputEvent('input', { bubbles: true, data: content }));
-  }
-  
-  const cursorPos = content.length;
-  if (element.setSelectionRange) {
-    element.setSelectionRange(cursorPos, cursorPos);
   }
   
   return true;

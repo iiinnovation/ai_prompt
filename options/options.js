@@ -338,28 +338,65 @@ function handleFileSelect(e) {
   const file = e.target.files[0];
   if (!file) return;
 
+  const fileName = file.name;
+  const isMarkdown = fileName.endsWith('.md');
+
   const reader = new FileReader();
   reader.onload = (event) => {
-    try {
-      pendingImportData = JSON.parse(event.target.result);
+    const content = event.target.result;
+    
+    if (isMarkdown) {
+      const templateName = fileName.replace(/\.md$/i, '');
+      const now = new Date().toISOString();
+      
+      pendingImportData = {
+        templates: [{
+          id: 'tpl-' + Date.now().toString(36) + '-' + Math.random().toString(36).substr(2, 9),
+          name: templateName,
+          category: '其他',
+          content: content.trim(),
+          order: templates.length + 1,
+          pinned: false,
+          usageCount: 0,
+          lastUsedAt: null,
+          createdAt: now,
+          updatedAt: now
+        }],
+        categories: []
+      };
       
       const preview = document.getElementById('importPreview');
-      const tplCount = pendingImportData.templates?.length || 0;
-      const catCount = pendingImportData.categories?.length || 0;
-      
       preview.innerHTML = `
-        <p>文件：${file.name}</p>
-        <p>包含 ${tplCount} 个模板，${catCount} 个分类</p>
+        <p>文件：${fileName}</p>
+        <p>将导入为模板「${templateName}」</p>
+        <p>内容长度：${content.length} 字符</p>
       `;
       
-      const hasConflict = pendingImportData.templates?.some(imp => 
-        templates.some(t => t.name === imp.name)
-      );
-      
+      const hasConflict = templates.some(t => t.name === templateName);
       document.getElementById('conflictOptions').style.display = hasConflict ? 'block' : 'none';
       document.getElementById('confirmImportBtn').disabled = false;
-    } catch (err) {
-      showToast('无效的 JSON 文件', 'error');
+    } else {
+      try {
+        pendingImportData = JSON.parse(content);
+        
+        const preview = document.getElementById('importPreview');
+        const tplCount = pendingImportData.templates?.length || 0;
+        const catCount = pendingImportData.categories?.length || 0;
+        
+        preview.innerHTML = `
+          <p>文件：${fileName}</p>
+          <p>包含 ${tplCount} 个模板，${catCount} 个分类</p>
+        `;
+        
+        const hasConflict = pendingImportData.templates?.some(imp => 
+          templates.some(t => t.name === imp.name)
+        );
+        
+        document.getElementById('conflictOptions').style.display = hasConflict ? 'block' : 'none';
+        document.getElementById('confirmImportBtn').disabled = false;
+      } catch (err) {
+        showToast('无效的 JSON 文件', 'error');
+      }
     }
   };
   reader.readAsText(file);

@@ -97,8 +97,14 @@ chrome.runtime.onInstalled.addListener((details) => {
     chrome.contextMenus.create({
       id: 'apt-context-menu',
       title: 'AI Prompt 模板助手',
-      contexts: ['page', 'selection'],
+      contexts: ['page'],
       documentUrlPatterns: SUPPORTED_URLS.map(u => `https://${u}/*`)
+    });
+    
+    chrome.contextMenus.create({
+      id: 'apt-create-template',
+      title: '用选中内容创建模板',
+      contexts: ['selection']
     });
   });
 });
@@ -112,6 +118,30 @@ chrome.storage.local.get(['templates'], (result) => {
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === 'apt-context-menu' && tab?.id && isSupportedUrl(tab.url)) {
     chrome.tabs.sendMessage(tab.id, { action: 'showQuickPanel' }).catch(() => {});
+  } else if (info.menuItemId === 'apt-create-template' && info.selectionText) {
+    chrome.storage.local.get(['templates', 'categories'], (result) => {
+      const templates = result.templates || [];
+      const categories = result.categories || ['代码', '写作', '翻译', '其他'];
+      const now = new Date().toISOString();
+      
+      const newTemplate = {
+        id: 'tpl-' + Date.now().toString(36) + '-' + Math.random().toString(36).substr(2, 9),
+        name: info.selectionText.substring(0, 30) + (info.selectionText.length > 30 ? '...' : ''),
+        content: info.selectionText,
+        category: '其他',
+        order: templates.length + 1,
+        pinned: false,
+        usageCount: 0,
+        lastUsedAt: null,
+        createdAt: now,
+        updatedAt: now
+      };
+      
+      templates.push(newTemplate);
+      chrome.storage.local.set({ templates }, () => {
+        chrome.runtime.openOptionsPage();
+      });
+    });
   }
 });
 

@@ -4,6 +4,8 @@ let settings = {};
 let currentCategory = '全部';
 let searchQuery = '';
 let currentSort = 'lastUsed';
+let selectedIndex = -1;
+let injectMode = 'replace';
 
 document.addEventListener('DOMContentLoaded', init);
 
@@ -30,6 +32,7 @@ async function loadData() {
 function setupEventListeners() {
   document.getElementById('searchInput').addEventListener('input', (e) => {
     searchQuery = e.target.value;
+    selectedIndex = -1;
     renderTemplateList();
   });
 
@@ -42,15 +45,46 @@ function setupEventListeners() {
     chrome.runtime.openOptionsPage();
   });
 
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      injectMode = btn.dataset.mode;
+    });
+  });
+
   document.addEventListener('keydown', (e) => {
-    if (e.key >= '1' && e.key <= '9') {
+    const filtered = filterAndSortTemplates();
+    
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      selectedIndex = Math.min(selectedIndex + 1, filtered.length - 1);
+      updateSelection();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      selectedIndex = Math.max(selectedIndex - 1, -1);
+      updateSelection();
+    } else if (e.key === 'Enter' && selectedIndex >= 0 && filtered[selectedIndex]) {
+      e.preventDefault();
+      injectTemplate(filtered[selectedIndex]);
+    } else if (e.key >= '1' && e.key <= '9') {
       const index = parseInt(e.key) - 1;
-      const filtered = filterAndSortTemplates();
       if (filtered[index]) {
         injectTemplate(filtered[index]);
       }
     }
   });
+}
+
+function updateSelection() {
+  const items = document.querySelectorAll('.template-item');
+  items.forEach((item, i) => {
+    item.classList.toggle('selected', i === selectedIndex);
+  });
+  
+  if (selectedIndex >= 0 && items[selectedIndex]) {
+    items[selectedIndex].scrollIntoView({ block: 'nearest' });
+  }
 }
 
 function renderCategories() {
@@ -154,12 +188,39 @@ async function injectTemplate(template) {
     chrome.storage.local.set({ templates });
   }
 
-  chrome.tabs.sendMessage(tab.id, {
-    action: 'injectTemplate',
-    template: template
-  }, (response) => {
-    if (response && response.success) {
+  try {
+    const response = await chrome.tabs.sendMessage(tab.id, {
+      action: 'injectTemplate',
+      template: template,
+      mode: injectMode
+    });
+    
+    if (response?.success) {
       window.close();
+    } else {
+      copyToClipboard(template.content);
     }
-  });
+  } catch {
+    copyToClipboard(template.content);
+  }
+}
+
+async function copyToClipboard(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast('已复制到剪贴板');
+    setTimeout(() => window.close(), 800);
+  } catch {
+    showToast('复制失败', true);
+  }
+}
+
+function showToast(message, isError = false) {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+  
+  const toast = document.createElement('div');
+  toast.className = `toast ${isError ? 'error' : 'success'}`;
+  toast.textContent = message;
+  document.body.appendChild(toast);
 }

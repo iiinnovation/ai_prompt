@@ -120,6 +120,30 @@ function getConversationState() {
   };
 }
 
+const VARIABLE_REGEX = /\{\{([^}]+)\}\}/g;
+
+function extractVariables(content) {
+  const variables = [];
+  const seen = new Set();
+  let match;
+  while ((match = VARIABLE_REGEX.exec(content)) !== null) {
+    const varName = match[1].trim();
+    if (!seen.has(varName)) {
+      seen.add(varName);
+      variables.push(varName);
+    }
+  }
+  VARIABLE_REGEX.lastIndex = 0;
+  return variables;
+}
+
+function replaceVariables(content, values) {
+  return content.replace(VARIABLE_REGEX, (match, varName) => {
+    const trimmedName = varName.trim();
+    return values[trimmedName] !== undefined ? values[trimmedName] : match;
+  });
+}
+
 const SEPARATOR_LINE = '\n\n───── ✨ 在下方输入你的问题 ─────\n\n';
 
 function injectContent(content, mode = 'replace', options = {}) {
@@ -188,6 +212,8 @@ if (typeof window !== 'undefined') {
     injectContent,
     isOngoingConversation,
     getSmartContent,
-    getConversationState
+    getConversationState,
+    extractVariables,
+    replaceVariables
   };
 }

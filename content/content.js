@@ -77,13 +77,103 @@
     return sortTemplates(filtered, settings.defaultSort || 'lastUsed');
   }
 
+  let variableModal = null;
+
+  function showVariableModal(template, content, variables, callback) {
+    hideVariableModal();
+    
+    variableModal = document.createElement('div');
+    variableModal.className = 'apt-variable-modal';
+    variableModal.innerHTML = `
+      <div class="apt-variable-header">
+        <div class="apt-variable-title">填写模板变量</div>
+        <div class="apt-variable-subtitle">${escapeHtml(template.name)}</div>
+      </div>
+      <div class="apt-variable-body">
+        ${variables.map((v, i) => `
+          <div class="apt-variable-field">
+            <label class="apt-variable-label">${escapeHtml(v)}</label>
+            <input type="text" class="apt-variable-input" data-var="${escapeHtml(v)}" placeholder="请输入${escapeHtml(v)}" ${i === 0 ? 'autofocus' : ''} />
+          </div>
+        `).join('')}
+      </div>
+      <div class="apt-variable-footer">
+        <button class="apt-variable-btn apt-variable-btn-cancel">取消</button>
+        <button class="apt-variable-btn apt-variable-btn-confirm">确认注入</button>
+      </div>
+    `;
+    document.body.appendChild(variableModal);
+
+    requestAnimationFrame(() => variableModal.classList.add('show'));
+
+    const inputs = variableModal.querySelectorAll('.apt-variable-input');
+    const cancelBtn = variableModal.querySelector('.apt-variable-btn-cancel');
+    const confirmBtn = variableModal.querySelector('.apt-variable-btn-confirm');
+
+    cancelBtn.addEventListener('click', hideVariableModal);
+
+    confirmBtn.addEventListener('click', () => {
+      const values = {};
+      inputs.forEach(input => {
+        values[input.dataset.var] = input.value || input.placeholder.replace('请输入', '');
+      });
+      const finalContent = window.PlatformHelper.replaceVariables(content, values);
+      hideVariableModal();
+      callback(finalContent);
+    });
+
+    inputs.forEach((input, index) => {
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          if (index < inputs.length - 1) {
+            inputs[index + 1].focus();
+          } else {
+            confirmBtn.click();
+          }
+        } else if (e.key === 'Escape') {
+          hideVariableModal();
+        }
+      });
+    });
+
+    if (inputs.length > 0) inputs[0].focus();
+  }
+
+  function hideVariableModal() {
+    if (variableModal) {
+      variableModal.classList.remove('show');
+      setTimeout(() => {
+        if (variableModal && variableModal.parentNode) {
+          variableModal.parentNode.removeChild(variableModal);
+        }
+        variableModal = null;
+      }, 200);
+    }
+  }
+
   async function injectTemplate(template) {
     const contentToInject = smartInjectionEnabled 
       ? window.PlatformHelper.getSmartContent(template)
       : template.content;
     
-    const addSeparator = settings.addSeparator !== false;
-    const success = window.PlatformHelper.injectContent(contentToInject, injectMode, { addSeparator });
+    const extractFn = window.PlatformHelper.extractVariables;
+    const variables = extractFn ? extractFn(contentToInject) : [];
+    
+    if (variables.length > 0) {
+      hideQuickPanel();
+      showVariableModal(template, contentToInject, variables, (finalContent) => {
+        doInject(template, finalContent, false);
+      });
+    } else {
+      const shouldAddSeparator = contentToInject.length > 100 || contentToInject.includes('\n');
+      doInject(template, contentToInject, shouldAddSeparator);
+    }
+  }
+
+  function doInject(template, content, addSeparator = true) {
+    const separatorEnabled = settings.addSeparator !== false && addSeparator;
+    const success = window.PlatformHelper.injectContent(content, injectMode, { addSeparator: separatorEnabled });
     
     if (success) {
       template.usageCount = (template.usageCount || 0) + 1;

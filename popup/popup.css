@@ -134,16 +134,6 @@ body {
   border-radius: 3px;
 }
 
-.template-item {
-  display: flex;
-  align-items: center;
-  padding: 10px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s;
-  position: relative;
-}
-
 .template-item:hover,
 .template-item.selected {
   background: #f5f5f5;
@@ -185,29 +175,6 @@ body {
   padding: 2px 6px;
   border-radius: 4px;
   margin-left: 8px;
-}
-
-.template-preview {
-  position: fixed;
-  left: 368px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 280px;
-  padding: 12px;
-  background: #1a1a2e;
-  color: #eee;
-  border-radius: 8px;
-  font-size: 12px;
-  line-height: 1.5;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-  display: none;
-  max-height: 300px;
-  overflow-y: auto;
-  z-index: 1000;
-}
-
-.template-item:hover .template-preview {
-  display: block;
 }
 
 .empty-state {
@@ -275,4 +242,63 @@ body {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
   }
+}
+
+.conversation-status {
+  padding: 8px 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 16px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.status-badge.new {
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  color: #1565c0;
+}
+
+.status-badge.ongoing {
+  background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+  color: #7b1fa2;
+}
+
+.template-item {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.template-header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.template-item .template-preview {
+  position: static;
+  display: block;
+  width: auto;
+  margin-top: 4px;
+  padding: 0;
+  background: none;
+  color: #888;
+  font-size: 11px;
+  line-height: 1.4;
+  box-shadow: none;
+  max-height: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transform: none;
 }

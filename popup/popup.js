@@ -6,14 +6,50 @@ let searchQuery = '';
 let currentSort = 'lastUsed';
 let selectedIndex = -1;
 let injectMode = 'replace';
+let smartInjectionEnabled = true;
+let addSeparatorEnabled = true;
+let conversationState = { isOngoing: false, platform: 'Unknown' };
 
 document.addEventListener('DOMContentLoaded', init);
 
 async function init() {
   await loadData();
+  await fetchConversationState();
+  renderConversationStatus();
   renderCategories();
   renderTemplateList();
   setupEventListeners();
+}
+
+async function fetchConversationState() {
+  try {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (tab?.id) {
+      const response = await chrome.tabs.sendMessage(tab.id, { action: 'getConversationState' });
+      if (response) {
+        conversationState = response;
+      }
+    }
+  } catch (e) {
+    conversationState = { isOngoing: false, platform: 'Unknown' };
+  }
+}
+
+function renderConversationStatus() {
+  const container = document.getElementById('conversationStatus');
+  if (!container || !smartInjectionEnabled) {
+    if (container) container.innerHTML = '';
+    return;
+  }
+  
+  const statusClass = conversationState.isOngoing ? 'ongoing' : 'new';
+  const statusText = conversationState.isOngoing ? '💬 对话中 - 使用精简版' : '✨ 新对话 - 使用完整版';
+  
+  container.innerHTML = `
+    <div class="status-badge ${statusClass}">
+      ${statusText}
+    </div>
+  `;
 }
 
 async function loadData() {
@@ -23,6 +59,8 @@ async function loadData() {
       categories = result.categories || ['代码', '写作', '翻译', '其他'];
       settings = result.settings || { defaultSort: 'lastUsed' };
       currentSort = settings.defaultSort || 'lastUsed';
+      smartInjectionEnabled = settings.smartInjection !== false;
+      addSeparatorEnabled = settings.addSeparator !== false;
       document.getElementById('sortSelect').value = currentSort;
       resolve();
     });
@@ -153,14 +191,21 @@ function renderTemplateList() {
     return;
   }
 
-  container.innerHTML = filtered.map((tpl, index) => `
-    <div class="template-item ${tpl.pinned ? 'pinned' : ''}" data-id="${tpl.id}">
-      <span class="template-icon"></span>
-      <span class="template-name">${escapeHtml(tpl.name)}</span>
-      ${index < 9 ? `<span class="template-shortcut">${index + 1}</span>` : ''}
-      <div class="template-preview">${escapeHtml(tpl.content.substring(0, 300))}${tpl.content.length > 300 ? '...' : ''}</div>
-    </div>
-  `).join('');
+  container.innerHTML = filtered.map((tpl, index) => {
+    const smartContent = getSmartContent(tpl);
+    const previewText = tpl.displayPreview || escapeHtml(smartContent.substring(0, 80));
+    
+    return `
+      <div class="template-item ${tpl.pinned ? 'pinned' : ''}" data-id="${tpl.id}">
+        <div class="template-header">
+          <span class="template-icon"></span>
+          <span class="template-name">${escapeHtml(tpl.name)}</span>
+          ${index < 9 ? `<span class="template-shortcut">${index + 1}</span>` : ''}
+        </div>
+        <div class="template-preview">${previewText}${smartContent.length > 80 ? '...' : ''}</div>
+      </div>
+    `;
+  }).join('');
 
   container.querySelectorAll('.template-item').forEach(item => {
     item.addEventListener('click', () => {
@@ -168,6 +213,16 @@ function renderTemplateList() {
       if (tpl) injectTemplate(tpl);
     });
   });
+}
+
+function getSmartContent(template) {
+  if (!smartInjectionEnabled || !template.conversationMode) {
+    return template.content;
+  }
+  
+  return conversationState.isOngoing
+    ? (template.conversationMode.ongoing || template.content)
+    : (template.conversationMode.newChat || template.content);
 }
 
 function escapeHtml(text) {
@@ -192,16 +247,18 @@ async function injectTemplate(template) {
     const response = await chrome.tabs.sendMessage(tab.id, {
       action: 'injectTemplate',
       template: template,
-      mode: injectMode
+      mode: injectMode,
+      smartInjection: smartInjectionEnabled,
+      addSeparator: addSeparatorEnabled
     });
     
     if (response?.success) {
       window.close();
     } else {
-      copyToClipboard(template.content);
+      copyToClipboard(getSmartContent(template));
     }
   } catch {
-    copyToClipboard(template.content);
+    copyToClipboard(getSmartContent(template));
   }
 }
 

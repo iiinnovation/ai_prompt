@@ -48,7 +48,7 @@
     "https://tongyi.aliyun.com/*"
   ],
   "commands": {
-    "_execute_action": {
+    "show-quick-panel": {
       "suggested_key": {
         "default": "Ctrl+Shift+P",
         "mac": "Command+Shift+P"

@@ -6,6 +6,8 @@
 
 - **模板管理** - 增删改查、分类管理、置顶收藏
 - **快速注入** - 快捷键 `Ctrl+Shift+P` (Mac: `Cmd+Shift+P`) 呼出面板
+- **智能分隔线** - 注入模板后自动添加分隔线，光标定位到输入区，视野清爽
+- **智能模式切换** - 自动识别新对话/对话中状态，使用对应版本的模板
 - **智能搜索** - 模糊匹配模板名称和内容
 - **键盘导航** - 支持 ↑↓ 方向键选择模板，Enter 确认
 - **追加模式** - 可选择覆盖或追加到光标位置
@@ -49,7 +51,16 @@ git clone https://github.com/YOUR_USERNAME/prompt-template-extension.git
 1. 访问支持的 AI 平台
 2. 按 `Ctrl+Shift+P` (Mac: `Cmd+Shift+P`) 或点击扩展图标
 3. 搜索或选择模板
-4. 模板内容自动填入输入框
+4. 模板内容自动填入输入框，光标定位到分隔线下方
+
+注入效果：
+```
+[模板内容...]
+
+───── ✨ 在下方输入你的问题 ─────
+
+|  ← 光标在这里，直接输入你的问题
+```
 
 ### 管理模板
 
@@ -104,7 +115,7 @@ git clone https://github.com/YOUR_USERNAME/prompt-template-extension.git
 prompt-template-extension/
 ├── manifest.json        # 扩展配置
 ├── background/          # Service Worker
-├── content/             # 内容脚本
+├── content/             # 内容脚本（平台适配 + 注入逻辑）
 ├── popup/               # 弹出面板
 ├── options/             # 管理页面
 ├── utils/               # 工具函数

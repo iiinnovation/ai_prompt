@@ -161,16 +161,6 @@
   padding: 8px;
 }
 
-.apt-template-item {
-  display: flex;
-  align-items: center;
-  padding: 12px;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.2s;
-  position: relative;
-}
-
 .apt-template-item:hover,
 .apt-template-item.selected {
   background: #f5f5f5;
@@ -198,29 +188,6 @@
   background: #f0f0f0;
   padding: 2px 8px;
   border-radius: 4px;
-}
-
-.apt-template-preview {
-  position: absolute;
-  left: 100%;
-  top: 0;
-  width: 300px;
-  padding: 12px;
-  background: #1a1a2e;
-  color: #eee;
-  border-radius: 8px;
-  font-size: 12px;
-  line-height: 1.5;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-  z-index: 10;
-  display: none;
-  max-height: 200px;
-  overflow-y: auto;
-  margin-left: 10px;
-}
-
-.apt-template-item:hover .apt-template-preview {
-  display: block;
 }
 
 .apt-panel-footer {
@@ -257,4 +224,63 @@
 .apt-overlay.show {
   opacity: 1;
   visibility: visible;
+}
+
+.apt-conversation-status {
+  padding: 8px 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.apt-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.apt-status-badge.new {
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  color: #1565c0;
+}
+
+.apt-status-badge.ongoing {
+  background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+  color: #7b1fa2;
+}
+
+.apt-template-item {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.apt-template-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.apt-template-item .apt-template-preview {
+  position: static;
+  display: block;
+  width: auto;
+  margin-top: 6px;
+  padding: 0;
+  background: none;
+  color: #888;
+  font-size: 12px;
+  line-height: 1.4;
+  box-shadow: none;
+  max-height: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

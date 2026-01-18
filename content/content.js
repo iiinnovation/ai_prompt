@@ -8,6 +8,7 @@
   let searchQuery = '';
   let selectedIndex = -1;
   let injectMode = 'replace';
+  let smartInjectionEnabled = true;
 
   function showToast(message, type = 'success') {
     const existingToast = document.querySelector('.apt-toast');
@@ -34,6 +35,7 @@
         templates = result.templates || [];
         categories = result.categories || ['代码', '写作', '翻译', '其他'];
         settings = result.settings || {};
+        smartInjectionEnabled = settings.smartInjection !== false;
         resolve();
       });
     });
@@ -76,7 +78,12 @@
   }
 
   async function injectTemplate(template) {
-    const success = window.PlatformHelper.injectContent(template.content, injectMode);
+    const contentToInject = smartInjectionEnabled 
+      ? window.PlatformHelper.getSmartContent(template)
+      : template.content;
+    
+    const addSeparator = settings.addSeparator !== false;
+    const success = window.PlatformHelper.injectContent(contentToInject, injectMode, { addSeparator });
     
     if (success) {
       template.usageCount = (template.usageCount || 0) + 1;
@@ -88,7 +95,9 @@
         chrome.storage.local.set({ templates });
       }
       
-      showToast('模板已注入', 'success');
+      const state = window.PlatformHelper.getConversationState();
+      const modeText = state.isOngoing ? '对话中模式' : '新对话模式';
+      showToast(`模板已注入 (${modeText})`, 'success');
       hideQuickPanel();
     } else {
       showToast('注入失败，未找到输入框', 'error');
@@ -113,6 +122,7 @@
           <button class="apt-mode-btn" data-mode="append">追加</button>
         </div>
       </div>
+      <div class="apt-conversation-status"></div>
       <div class="apt-panel-categories"></div>
       <div class="apt-panel-list"></div>
       <div class="apt-panel-footer">
@@ -174,13 +184,25 @@
       return;
     }
 
-    container.innerHTML = filtered.slice(0, 9).map((tpl, index) => `
-      <div class="apt-template-item ${tpl.pinned ? 'pinned' : ''}" data-id="${tpl.id}">
-        <span class="apt-template-name">${tpl.name}</span>
-        <span class="apt-template-shortcut">${index + 1}</span>
-        <div class="apt-template-preview">${escapeHtml(tpl.content.substring(0, 200))}${tpl.content.length > 200 ? '...' : ''}</div>
-      </div>
-    `).join('');
+    const state = window.PlatformHelper.getConversationState();
+
+    container.innerHTML = filtered.slice(0, 9).map((tpl, index) => {
+      const previewText = tpl.displayPreview || escapeHtml(tpl.content.substring(0, 100));
+      const smartContent = smartInjectionEnabled && tpl.conversationMode
+        ? (state.isOngoing ? tpl.conversationMode.ongoing : tpl.conversationMode.newChat)
+        : tpl.content;
+      const smartPreview = escapeHtml(smartContent.substring(0, 80));
+      
+      return `
+        <div class="apt-template-item ${tpl.pinned ? 'pinned' : ''}" data-id="${tpl.id}">
+          <div class="apt-template-header">
+            <span class="apt-template-name">${escapeHtml(tpl.name)}</span>
+            <span class="apt-template-shortcut">${index + 1}</span>
+          </div>
+          <div class="apt-template-preview">${smartPreview}${smartContent.length > 80 ? '...' : ''}</div>
+        </div>
+      `;
+    }).join('');
 
     container.querySelectorAll('.apt-template-item').forEach(item => {
       item.addEventListener('click', () => {
@@ -239,6 +261,7 @@
     searchQuery = '';
     selectedIndex = -1;
     
+    renderConversationStatus();
     renderCategories();
     renderTemplateList();
     
@@ -248,6 +271,24 @@
     const searchInput = quickPanel.querySelector('.apt-search-input');
     searchInput.value = '';
     searchInput.focus();
+  }
+
+  function renderConversationStatus() {
+    const container = quickPanel.querySelector('.apt-conversation-status');
+    if (!container || !smartInjectionEnabled) {
+      if (container) container.innerHTML = '';
+      return;
+    }
+    
+    const state = window.PlatformHelper.getConversationState();
+    const statusClass = state.isOngoing ? 'ongoing' : 'new';
+    const statusText = state.isOngoing ? '💬 对话中 - 使用精简版' : '✨ 新对话 - 使用完整版';
+    
+    container.innerHTML = `
+      <div class="apt-status-badge ${statusClass}">
+        ${statusText}
+      </div>
+    `;
   }
 
   function hideQuickPanel() {
@@ -262,15 +303,27 @@
     } else if (request.action === 'injectTemplate') {
       const template = request.template;
       const mode = request.mode || 'replace';
+      const useSmartInjection = request.smartInjection !== false;
+      const addSeparator = request.addSeparator !== false;
+      
       if (template) {
-        const success = window.PlatformHelper.injectContent(template.content, mode);
+        const contentToInject = useSmartInjection
+          ? window.PlatformHelper.getSmartContent(template)
+          : template.content;
+        
+        const success = window.PlatformHelper.injectContent(contentToInject, mode, { addSeparator });
         if (success) {
-          showToast('模板已注入', 'success');
+          const state = window.PlatformHelper.getConversationState();
+          const modeText = state.isOngoing ? '对话中' : '新对话';
+          showToast(`模板已注入 (${modeText})`, 'success');
         } else {
           showToast('注入失败', 'error');
         }
         sendResponse({ success });
       }
+    } else if (request.action === 'getConversationState') {
+      const state = window.PlatformHelper.getConversationState();
+      sendResponse(state);
     }
     return true;
   });

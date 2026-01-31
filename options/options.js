@@ -4,6 +4,8 @@ let settings = {};
 let currentCategory = '全部';
 let selectedTemplateId = null;
 let pendingImportData = null;
+let isBatchMode = false;
+let selectedTemplateIds = new Set();
 
 document.addEventListener('DOMContentLoaded', init);
 
@@ -28,6 +30,8 @@ async function loadData() {
 function setupEventListeners() {
   document.getElementById('addTemplateBtn').addEventListener('click', () => openDetailPanel(null));
   document.getElementById('batchAddBtn').addEventListener('click', () => showModal('batchModal'));
+  document.getElementById('batchManageBtn').addEventListener('click', toggleBatchMode);
+  document.getElementById('deleteSelectedBtn').addEventListener('click', deleteSelectedTemplates);
   document.getElementById('exportBtn').addEventListener('click', exportData);
   document.getElementById('importBtn').addEventListener('click', () => showModal('importModal'));
   document.getElementById('addCategoryBtn').addEventListener('click', addCategory);
@@ -84,11 +88,11 @@ function renderCategories() {
 function renderTemplateList() {
   const container = document.getElementById('templateList');
   let filtered = templates;
-  
+
   if (currentCategory !== '全部') {
     filtered = templates.filter(t => t.category === currentCategory);
   }
-  
+
   filtered.sort((a, b) => {
     if (a.pinned && !b.pinned) return -1;
     if (!a.pinned && b.pinned) return 1;
@@ -107,19 +111,112 @@ function renderTemplateList() {
     return;
   }
 
-  container.innerHTML = filtered.map(tpl => `
-    <div class="template-card ${tpl.id === selectedTemplateId ? 'active' : ''}" data-id="${tpl.id}">
-      <span class="template-card-icon">${tpl.pinned ? '⭐' : '📝'}</span>
+  // 添加批量模式提示
+  let batchHint = '';
+  if (isBatchMode) {
+    batchHint = `
+      <div class="batch-mode-hint">
+        点击模板卡片或复选框选择，选择完成后点击"删除选中"按钮批量删除
+      </div>
+    `;
+  }
+
+  container.innerHTML = batchHint + filtered.map(tpl => {
+    const isSelected = selectedTemplateIds.has(tpl.id);
+    return `
+    <div class="template-card ${tpl.id === selectedTemplateId ? 'active' : ''} ${isSelected ? 'selected' : ''}" data-id="${tpl.id}">
+      ${isBatchMode
+        ? `<div class="checkbox-wrapper"><input type="checkbox" class="template-checkbox" ${isSelected ? 'checked' : ''}></div>`
+        : `<span class="template-card-icon">${tpl.pinned ? '⭐' : '📝'}</span>`
+      }
       <div class="template-card-info">
         <div class="template-card-name">${escapeHtml(tpl.name)}</div>
         <div class="template-card-meta">${tpl.category} · 使用 ${tpl.usageCount || 0} 次</div>
       </div>
     </div>
-  `).join('');
+  `}).join('');
 
   container.querySelectorAll('.template-card').forEach(card => {
-    card.addEventListener('click', () => openDetailPanel(card.dataset.id));
+    card.addEventListener('click', (e) => {
+      if (e.target.type === 'checkbox') return;
+      
+      if (isBatchMode) {
+        toggleSelection(card.dataset.id);
+      } else {
+        openDetailPanel(card.dataset.id);
+      }
+    });
+    
+    const checkbox = card.querySelector('input[type="checkbox"]');
+    if (checkbox) {
+        checkbox.addEventListener('change', () => {
+             toggleSelection(card.dataset.id);
+        });
+    }
   });
+}
+
+function toggleBatchMode() {
+  isBatchMode = !isBatchMode;
+  selectedTemplateIds.clear();
+  updateBatchUI();
+  renderTemplateList();
+}
+
+function updateBatchUI() {
+  const manageBtn = document.getElementById('batchManageBtn');
+  const deleteBtn = document.getElementById('deleteSelectedBtn');
+  const addBtn = document.getElementById('addTemplateBtn');
+  const batchAddBtn = document.getElementById('batchAddBtn');
+
+  if (isBatchMode) {
+    manageBtn.textContent = '✅ 完成管理';
+    manageBtn.classList.add('btn-primary');
+    manageBtn.classList.remove('btn-secondary');
+    manageBtn.title = '退出批量模式';
+    deleteBtn.style.display = 'block';
+    addBtn.style.display = 'none';
+    batchAddBtn.style.display = 'none';
+  } else {
+    manageBtn.textContent = '✨ 批量管理';
+    manageBtn.classList.add('btn-secondary');
+    manageBtn.classList.remove('btn-primary');
+    manageBtn.title = '开启批量模式以选择和删除多个模板';
+    deleteBtn.style.display = 'none';
+    addBtn.style.display = 'block';
+    batchAddBtn.style.display = 'block';
+  }
+  updateSelectedCount();
+}
+
+function toggleSelection(id) {
+  if (selectedTemplateIds.has(id)) {
+    selectedTemplateIds.delete(id);
+  } else {
+    selectedTemplateIds.add(id);
+  }
+  updateSelectedCount();
+  renderTemplateList();
+}
+
+function updateSelectedCount() {
+  document.getElementById('selectedCount').textContent = selectedTemplateIds.size;
+}
+
+async function deleteSelectedTemplates() {
+  if (selectedTemplateIds.size === 0) return;
+  
+  if (!confirm(`确定要删除选中的 ${selectedTemplateIds.size} 个模板吗？`)) return;
+  
+  templates = templates.filter(t => !selectedTemplateIds.has(t.id));
+  
+  await chrome.storage.local.set({ templates });
+  
+  showToast(`已删除 ${selectedTemplateIds.size} 个模板`, 'success');
+  selectedTemplateIds.clear();
+  updateSelectedCount();
+  renderCategories();
+  renderTemplateList();
 }
 
 function openDetailPanel(id) {

@@ -76,7 +76,10 @@ function setupEventListeners() {
 
   document.getElementById('sortSelect').addEventListener('change', (e) => {
     currentSort = e.target.value;
+    selectedIndex = -1;
     renderTemplateList();
+    // 保存用户的排序偏好
+    chrome.storage.local.set({ settings: { ...settings, defaultSort: currentSort } });
   });
 
   document.getElementById('manageBtn').addEventListener('click', () => {
@@ -168,9 +171,12 @@ function filterAndSortTemplates() {
       case 'lastUsed':
         const aTime = a.lastUsedAt ? new Date(a.lastUsedAt).getTime() : 0;
         const bTime = b.lastUsedAt ? new Date(b.lastUsedAt).getTime() : 0;
-        return bTime - aTime;
+        if (bTime !== aTime) return bTime - aTime;
+        return (a.order || 0) - (b.order || 0);
       case 'usageCount':
-        return (b.usageCount || 0) - (a.usageCount || 0);
+        const diff = (b.usageCount || 0) - (a.usageCount || 0);
+        if (diff !== 0) return diff;
+        return (a.order || 0) - (b.order || 0);
       default:
         return (a.order || 0) - (b.order || 0);
     }

@@ -117,6 +117,16 @@ body {
   font-size: 12px;
   outline: none;
   cursor: pointer;
+  transition: all 0.2s;
+}
+
+.popup-sort select:hover {
+  border-color: #667eea;
+}
+
+.popup-sort select:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
 }
 
 .popup-list {

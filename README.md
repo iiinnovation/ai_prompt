@@ -5,10 +5,11 @@
 ## 功能特性
 
 ### 核心功能
-- **丰富模板库** - 预置 23 个精选模板，覆盖日常、工作、学习、生活、写作、翻译、代码 7 大场景
+- **丰富模板库** - 预置 31 个精选模板，覆盖日常、工作、学习、生活、写作、翻译、代码、产品运营、数据分析、社交媒体、图像生成 11 大场景
 - **模板变量** - 支持 `{{变量名}}` 语法，注入时弹窗填写，让模板真正可复用
 - **快速注入** - 快捷键 `Ctrl+Shift+P` (Mac: `Cmd+Shift+P`) 呼出面板，一键注入
 - **智能分隔线** - 长模板自动添加分隔线并定位光标，短模板和变量模板则直接注入
+- **平台扩展** - 新增 Claude、Perplexity、Grok、豆包 平台支持，扩展到 9 个主流 AI 平台
 
 ### 模板管理
 - 增删改查、分类管理、置顶收藏
@@ -34,6 +35,10 @@
 | DeepSeek | chat.deepseek.com |
 | Kimi | kimi.moonshot.cn |
 | 通义千问 | tongyi.aliyun.com |
+| Claude | claude.ai |
+| Perplexity | perplexity.ai / www.perplexity.ai |
+| Grok | grok.com / x.com/i/grok |
+| 豆包 | doubao.com / www.doubao.com |
 
 ## 预置模板
 
@@ -46,6 +51,10 @@
 | 写作 | 文章润色、总结要点、文案撰写 |
 | 翻译 | 中英互译、多语言翻译 |
 | 代码 | 代码审查、SQL优化、代码解释、Bug排查 |
+| 产品运营 | PRD 草案生成、竞品分析 |
+| 数据分析 | 数据解读、图表结论总结 |
+| 社交媒体 | 小红书种草文案、公众号推文草稿 |
+| 图像生成 | Midjourney 提示词、DALL·E 提示词 |
 
 ## 安装
 
@@ -53,7 +62,7 @@
 
 1. 克隆仓库
 ```bash
-git clone https://github.com/YOUR_USERNAME/prompt-template-extension.git
+git clone https://github.com/iiinnovation/ai_prompt.git
 ```
 
 2. 打开 Chrome，访问 `chrome://extensions/`
@@ -62,7 +71,7 @@ git clone https://github.com/YOUR_USERNAME/prompt-template-extension.git
 
 4. 点击「加载已解压的扩展程序」
 
-5. 选择 `prompt-template-extension` 文件夹
+5. 选择 `ai_prompt` 文件夹
 
 ## 使用方法
 
@@ -147,7 +156,7 @@ git clone https://github.com/YOUR_USERNAME/prompt-template-extension.git
 ## 项目结构
 
 ```
-prompt-template-extension/
+ai_prompt/
 ├── manifest.json        # 扩展配置
 ├── background/          # Service Worker
 ├── content/             # 内容脚本（平台适配、注入逻辑、变量弹窗）
@@ -158,6 +167,13 @@ prompt-template-extension/
 ```
 
 ## 更新日志
+
+### v1.1.0
+- ✅ 新增 Claude、Perplexity、Grok、豆包 4 个平台适配
+- ✅ 预置模板从 23 个扩展到 31 个
+- ✅ 新增产品运营、数据分析、社交媒体、图像生成 4 个模板分类
+- ✅ 补充预置模板迁移逻辑，兼容老用户升级
+- ✅ 统一 GitHub 仓库地址与版本信息到 `v1.1.0`
 
 ### v1.0.1
 - ✅ 修复插件弹窗排序功能失效问题

@@ -1,4 +1,6 @@
 (function() {
+  const FALLBACK_CATEGORIES = ['日常', '工作', '学习', '生活', '写作', '翻译', '代码', '产品运营', '数据分析', '社交媒体', '图像生成', '其他'];
+  const INLINE_STYLE_ID = 'apt-inline-content-styles';
   let quickPanel = null;
   let overlay = null;
   let templates = [];
@@ -9,6 +11,38 @@
   let selectedIndex = -1;
   let injectMode = 'replace';
   let smartInjectionEnabled = true;
+  let styleLoadPromise = null;
+
+  async function ensurePanelStylesLoaded() {
+    if (document.getElementById(INLINE_STYLE_ID)) {
+      return;
+    }
+
+    if (!styleLoadPromise) {
+      styleLoadPromise = fetch(chrome.runtime.getURL('content/content.css'))
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Failed to load content styles: ${response.status}`);
+          }
+          return response.text();
+        })
+        .then((cssText) => {
+          if (document.getElementById(INLINE_STYLE_ID)) {
+            return;
+          }
+
+          const style = document.createElement('style');
+          style.id = INLINE_STYLE_ID;
+          style.textContent = cssText;
+          (document.head || document.documentElement).appendChild(style);
+        })
+        .catch((error) => {
+          console.warn('[AI Prompt Helper] Failed to inject content styles:', error);
+        });
+    }
+
+    await styleLoadPromise;
+  }
 
   function showToast(message, type = 'success') {
     const existingToast = document.querySelector('.apt-toast');
@@ -33,7 +67,7 @@
     return new Promise((resolve) => {
       chrome.storage.local.get(['templates', 'categories', 'settings'], (result) => {
         templates = result.templates || [];
-        categories = result.categories || ['代码', '写作', '翻译', '其他'];
+        categories = result.categories || FALLBACK_CATEGORIES;
         settings = result.settings || {};
         smartInjectionEnabled = settings.smartInjection !== false;
         resolve();
@@ -344,6 +378,7 @@
   }
 
   async function showQuickPanel() {
+    await ensurePanelStylesLoaded();
     await loadData();
     createQuickPanel();
     

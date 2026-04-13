@@ -1,3 +1,5 @@
+const FALLBACK_CATEGORIES = ['日常', '工作', '学习', '生活', '写作', '翻译', '代码', '产品运营', '数据分析', '社交媒体', '图像生成', '其他'];
+
 let templates = [];
 let categories = [];
 let settings = {};
@@ -20,7 +22,7 @@ async function loadData() {
   return new Promise((resolve) => {
     chrome.storage.local.get(['templates', 'categories', 'settings'], (result) => {
       templates = result.templates || [];
-      categories = result.categories || ['代码', '写作', '翻译', '其他'];
+      categories = result.categories || FALLBACK_CATEGORIES;
       settings = result.settings || {};
       resolve();
     });

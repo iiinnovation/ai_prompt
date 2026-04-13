@@ -1,0 +1,201 @@
+
+<h2 class="sr-only">AI Prompt 插件更新建议报告</h2>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); color: var(--color-text-primary); }
+  .wrap { padding: 1.5rem 0; }
+  .section { margin-bottom: 2rem; }
+  .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; padding-bottom: 8px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .section-num { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 500; flex-shrink: 0; }
+  .section-title { font-size: 16px; font-weight: 500; }
+  .tag { display: inline-block; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 4px; margin-left: 8px; vertical-align: middle; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); gap: 10px; }
+  .card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 14px 16px; }
+  .card-title { font-size: 14px; font-weight: 500; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+  .card-body { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; }
+  .card-body ul { padding-left: 1rem; }
+  .card-body li { margin-bottom: 3px; }
+  .pill-group { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .pill { font-size: 12px; padding: 3px 10px; border-radius: 12px; border: 0.5px solid var(--color-border-tertiary); color: var(--color-text-secondary); background: var(--color-background-secondary); }
+  .priority-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .priority-table th { font-size: 12px; font-weight: 500; color: var(--color-text-secondary); text-align: left; padding: 6px 10px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .priority-table td { padding: 9px 10px; border-bottom: 0.5px solid var(--color-border-tertiary); color: var(--color-text-primary); vertical-align: top; }
+  .priority-table tr:last-child td { border-bottom: none; }
+  .badge { display: inline-block; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 4px; }
+  .badge-high { background: #FCEBEB; color: #A32D2D; }
+  .badge-mid  { background: #FAEEDA; color: #854F0B; }
+  .badge-low  { background: #EAF3DE; color: #3B6D11; }
+  .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 1.5rem; }
+  .stat { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 12px 14px; }
+  .stat-label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px; }
+  .stat-val { font-size: 22px; font-weight: 500; }
+  @media (max-width: 600px) {
+    .cards { grid-template-columns: 1fr; }
+    .stat-row { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+<div class="wrap">
+
+  <div class="stat-row">
+    <div class="stat"><div class="stat-label">当前版本</div><div class="stat-val" style="font-size:18px;">v1.0.1</div></div>
+    <div class="stat"><div class="stat-label">预置模板数</div><div class="stat-val">23</div></div>
+    <div class="stat"><div class="stat-label">支持平台</div><div class="stat-val">5</div></div>
+    <div class="stat"><div class="stat-label">建议更新项</div><div class="stat-val" style="color:#A32D2D;">18</div></div>
+  </div>
+
+  <!-- 一、平台支持 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num" style="background:#E6F1FB;color:#185FA5;">1</div>
+      <span class="section-title">平台支持扩展</span>
+      <span class="tag" style="background:#FCEBEB;color:#A32D2D;">高优先级</span>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <div class="card-title">新增主流平台适配</div>
+        <div class="card-body">
+          当前仅支持 5 个平台，以下高频平台缺失：
+          <div class="pill-group">
+            <span class="pill">Claude.ai</span>
+            <span class="pill">Perplexity</span>
+            <span class="pill">Grok (x.com)</span>
+            <span class="pill">豆包</span>
+            <span class="pill">文心一言</span>
+            <span class="pill">讯飞星火</span>
+            <span class="pill">Copilot</span>
+            <span class="pill">POE</span>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">通用输入框适配方案</div>
+        <div class="card-body">
+          当前为硬编码平台列表，建议增加 <strong>通用模式</strong>：检测页面中的 contenteditable / textarea 元素，非 AI 平台也能直接注入，而不只是复制到剪贴板。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 二、模板库 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num" style="background:#E1F5EE;color:#0F6E56;">2</div>
+      <span class="section-title">模板库丰富度</span>
+      <span class="tag" style="background:#FCEBEB;color:#A32D2D;">高优先级</span>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <div class="card-title">缺失场景补充</div>
+        <div class="card-body">
+          <ul>
+            <li>产品/运营场景（PRD、需求文档、竞品分析）</li>
+            <li>数据分析场景（数据解读、报表描述）</li>
+            <li>图像生成 Prompt（Midjourney / DALL·E 格式）</li>
+            <li>角色扮演 / 模拟对话</li>
+            <li>社交媒体文案（小红书、微信公众号风格）</li>
+          </ul>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">模板社区共享</div>
+        <div class="card-body">允许用户一键将自己的模板发布到公共模板库，其他用户可按评分/分类浏览并导入，实现社区沉淀。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 三、AI 增强 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num" style="background:#FBEAF0;color:#993556;">3</div>
+      <span class="section-title">AI 能力增强</span>
+      <span class="tag" style="background:#FAEEDA;color:#854F0B;">中优先级</span>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <div class="card-title">Prompt 一键优化</div>
+        <div class="card-body">集成 API（可选配），对用户自己写的粗糙 Prompt 自动进行结构化改写，提升指令清晰度和有效性。</div>
+      </div>
+      <div class="card">
+        <div class="card-title">根据页面上下文推荐</div>
+        <div class="card-body">识别当前页面内容（如用户在 GitHub 上看代码，则优先推荐"代码审查""Bug 排查"等模板），实现智能召回。</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Prompt 效果打分</div>
+        <div class="card-body">使用后对 AI 的回复质量打分（1-5 星），系统根据评分数据自动优化模板推荐权重。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 四、数据同步 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num" style="background:#EAF3DE;color:#3B6D11;">4</div>
+      <span class="section-title">数据同步与多端</span>
+      <span class="tag" style="background:#FAEEDA;color:#854F0B;">中优先级</span>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <div class="card-title">Chrome 账号同步</div>
+        <div class="card-body">使用 <code>chrome.storage.sync</code> 替代 <code>chrome.storage.local</code>，登录同一 Chrome 账号的多台设备自动同步模板数据，无需手动导出导入。</div>
+      </div>
+      <div class="card">
+        <div class="card-title">第三方云备份</div>
+        <div class="card-body">支持一键备份到 Notion 数据库 / Google Drive / GitHub Gist，满足高级用户的数据归档需求。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 五、交互体验 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num" style="background:#EEEDFE;color:#534AB7;">5</div>
+      <span class="section-title">交互体验优化</span>
+      <span class="tag" style="background:#EAF3DE;color:#3B6D11;">低优先级</span>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <div class="card-title">面板内联编辑</div>
+        <div class="card-body">在弹出面板中直接双击模板文本即可编辑，不必每次跳转到选项页，减少操作路径。</div>
+      </div>
+      <div class="card">
+        <div class="card-title">变量预设默认值</div>
+        <div class="card-body">模板变量支持设置默认值，如 <code>{{语言|中文}}</code>，用户若不修改可直接回车使用，加速常见场景注入。</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Prompt 历史记录</div>
+        <div class="card-body">记录最近注入的 20 条 Prompt（含变量填写内容），支持快速重复使用上次填写过的组合。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 六、优先级汇总 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num" style="background:#D3D1C7;color:#444441;">6</div>
+      <span class="section-title">更新优先级汇总</span>
+    </div>
+    <table class="priority-table">
+      <thead>
+        <tr>
+          <th>更新项</th>
+          <th>优先级</th>
+          <th>难度</th>
+          <th>预期价值</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Claude.ai / 豆包 / Grok 平台适配</td><td><span class="badge badge-high">高</span></td><td>低</td><td>直接扩大可用用户群</td></tr>
+        <tr><td>通用输入框适配（非 AI 平台也能用）</td><td><span class="badge badge-high">高</span></td><td>中</td><td>彻底去除平台限制</td></tr>
+        <tr><td>新增社交/产品/数据分析模板</td><td><span class="badge badge-high">高</span></td><td>低</td><td>覆盖更多用户场景</td></tr>
+        <tr><td>chrome.storage.sync 多设备同步</td><td><span class="badge badge-high">高</span></td><td>低</td><td>解决换机丢数据痛点</td></tr>
+        <tr><td>变量默认值支持</td><td><span class="badge badge-mid">中</span></td><td>低</td><td>加速常见场景使用</td></tr>
+        <tr><td>面板内联快速编辑</td><td><span class="badge badge-mid">中</span></td><td>中</td><td>减少操作路径</td></tr>
+        <tr><td>Prompt 注入历史记录</td><td><span class="badge badge-mid">中</span></td><td>低</td><td>提升复用效率</td></tr>
+        <tr><td>页面上下文智能推荐</td><td><span class="badge badge-mid">中</span></td><td>高</td><td>差异化竞争力</td></tr>
+        <tr><td>模板社区共享市场</td><td><span class="badge badge-low">低</span></td><td>高</td><td>长期生态价值</td></tr>
+        <tr><td>Prompt 一键 AI 优化</td><td><span class="badge badge-low">低</span></td><td>高</td><td>高端用户增值功能</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>

@@ -403,9 +403,149 @@ const DEFAULT_DATA = {
         ongoing: '请帮我排查上述 Bug'
       },
       displayPreview: '🐛 Bug 排查'
+    },
+    // ===== 产品运营场景 =====
+    {
+      id: 'preset-product-1',
+      name: 'PRD 草案生成',
+      content: '请根据以下产品需求背景，输出一份结构完整的 PRD 草案：\n- 产品目标：{{产品目标}}\n- 目标用户：{{目标用户}}\n- 核心场景：{{核心场景}}\n- 功能范围：{{功能范围}}\n- 成功指标：{{成功指标}}\n\n请包含：背景、目标、用户故事、功能清单、流程说明、验收标准、风险与待确认项。',
+      category: '产品运营',
+      order: 24,
+      pinned: false,
+      usageCount: 0,
+      lastUsedAt: null,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      conversationMode: {
+        newChat: '请根据以下产品需求背景，输出一份结构完整的 PRD 草案：\n- 产品目标：{{产品目标}}\n- 目标用户：{{目标用户}}\n- 核心场景：{{核心场景}}\n- 功能范围：{{功能范围}}\n- 成功指标：{{成功指标}}\n\n请包含：背景、目标、用户故事、功能清单、流程说明、验收标准、风险与待确认项。',
+        ongoing: '请基于上述讨论补全这份 PRD 草案'
+      },
+      displayPreview: '📦 PRD 草案生成'
+    },
+    {
+      id: 'preset-product-2',
+      name: '竞品分析',
+      content: '请围绕「{{产品名称}}」做竞品分析，竞品包括：{{竞品列表}}。\n\n请输出：\n1. 目标用户与定位\n2. 核心功能对比\n3. 定价/商业模式\n4. 优势与短板\n5. 对我们的启发与机会点',
+      category: '产品运营',
+      order: 25,
+      pinned: false,
+      usageCount: 0,
+      lastUsedAt: null,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      conversationMode: {
+        newChat: '请围绕「{{产品名称}}」做竞品分析，竞品包括：{{竞品列表}}。\n\n请输出：\n1. 目标用户与定位\n2. 核心功能对比\n3. 定价/商业模式\n4. 优势与短板\n5. 对我们的启发与机会点',
+        ongoing: '请继续深化上述竞品分析结论'
+      },
+      displayPreview: '🧭 竞品分析'
+    },
+    // ===== 数据分析场景 =====
+    {
+      id: 'preset-data-1',
+      name: '数据解读',
+      content: '请帮我解读以下数据表现：\n- 指标名称：{{指标名称}}\n- 时间范围：{{时间范围}}\n- 数据内容：{{数据内容}}\n- 业务背景：{{业务背景}}\n\n请输出：关键发现、可能原因、风险点、后续建议。',
+      category: '数据分析',
+      order: 26,
+      pinned: false,
+      usageCount: 0,
+      lastUsedAt: null,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      conversationMode: {
+        newChat: '请帮我解读以下数据表现：\n- 指标名称：{{指标名称}}\n- 时间范围：{{时间范围}}\n- 数据内容：{{数据内容}}\n- 业务背景：{{业务背景}}\n\n请输出：关键发现、可能原因、风险点、后续建议。',
+        ongoing: '请继续分析上述数据变化的原因和建议'
+      },
+      displayPreview: '📈 数据解读'
+    },
+    {
+      id: 'preset-data-2',
+      name: '图表结论总结',
+      content: '下面是一组图表或报表信息：\n{{图表信息}}\n\n请帮我提炼成适合汇报的结论，要求：\n1. 先给一句总论\n2. 再列出 3-5 个关键洞察\n3. 标出异常点或需要重点关注的问题\n4. 给出下一步行动建议',
+      category: '数据分析',
+      order: 27,
+      pinned: false,
+      usageCount: 0,
+      lastUsedAt: null,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      conversationMode: {
+        newChat: '下面是一组图表或报表信息：\n{{图表信息}}\n\n请帮我提炼成适合汇报的结论，要求：\n1. 先给一句总论\n2. 再列出 3-5 个关键洞察\n3. 标出异常点或需要重点关注的问题\n4. 给出下一步行动建议',
+        ongoing: '请继续整理上述图表对应的汇报结论'
+      },
+      displayPreview: '📊 图表结论总结'
+    },
+    // ===== 社交媒体场景 =====
+    {
+      id: 'preset-social-1',
+      name: '小红书种草文案',
+      content: '请帮我写一篇适合小红书发布的种草文案：\n- 产品/主题：{{产品或主题}}\n- 目标人群：{{目标人群}}\n- 使用场景：{{使用场景}}\n- 卖点：{{卖点}}\n- 风格：{{风格}}\n\n要求：有标题、正文分段、适量 emoji、结尾互动引导。',
+      category: '社交媒体',
+      order: 28,
+      pinned: false,
+      usageCount: 0,
+      lastUsedAt: null,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      conversationMode: {
+        newChat: '请帮我写一篇适合小红书发布的种草文案：\n- 产品/主题：{{产品或主题}}\n- 目标人群：{{目标人群}}\n- 使用场景：{{使用场景}}\n- 卖点：{{卖点}}\n- 风格：{{风格}}\n\n要求：有标题、正文分段、适量 emoji、结尾互动引导。',
+        ongoing: '请继续优化上述小红书文案的吸引力'
+      },
+      displayPreview: '📕 小红书种草文案'
+    },
+    {
+      id: 'preset-social-2',
+      name: '公众号推文草稿',
+      content: '请帮我撰写一篇微信公众号推文草稿：\n- 主题：{{主题}}\n- 受众：{{受众}}\n- 核心观点：{{核心观点}}\n- 参考素材：{{参考素材}}\n- 语气：{{语气}}\n\n要求：包含标题、导语、正文结构、小标题和结尾 CTA。',
+      category: '社交媒体',
+      order: 29,
+      pinned: false,
+      usageCount: 0,
+      lastUsedAt: null,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      conversationMode: {
+        newChat: '请帮我撰写一篇微信公众号推文草稿：\n- 主题：{{主题}}\n- 受众：{{受众}}\n- 核心观点：{{核心观点}}\n- 参考素材：{{参考素材}}\n- 语气：{{语气}}\n\n要求：包含标题、导语、正文结构、小标题和结尾 CTA。',
+        ongoing: '请根据上述内容继续完善公众号推文'
+      },
+      displayPreview: '📰 公众号推文草稿'
+    },
+    // ===== 图像生成场景 =====
+    {
+      id: 'preset-image-1',
+      name: 'Midjourney 提示词',
+      content: '请把下面的创意需求整理成适合 Midjourney 的英文 Prompt：\n- 主体：{{主体}}\n- 场景：{{场景}}\n- 风格：{{风格}}\n- 构图：{{构图}}\n- 光线：{{光线}}\n- 细节要求：{{细节要求}}\n\n请直接输出可复制的 Prompt，并附一个简短中文说明。',
+      category: '图像生成',
+      order: 30,
+      pinned: false,
+      usageCount: 0,
+      lastUsedAt: null,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      conversationMode: {
+        newChat: '请把下面的创意需求整理成适合 Midjourney 的英文 Prompt：\n- 主体：{{主体}}\n- 场景：{{场景}}\n- 风格：{{风格}}\n- 构图：{{构图}}\n- 光线：{{光线}}\n- 细节要求：{{细节要求}}\n\n请直接输出可复制的 Prompt，并附一个简短中文说明。',
+        ongoing: '请继续优化上述 Midjourney Prompt'
+      },
+      displayPreview: '🎨 Midjourney 提示词'
+    },
+    {
+      id: 'preset-image-2',
+      name: 'DALL·E 提示词',
+      content: '请根据以下要求生成适合 DALL·E 的高质量图像描述：\n- 画面主题：{{画面主题}}\n- 风格参考：{{风格参考}}\n- 色彩氛围：{{色彩氛围}}\n- 重点元素：{{重点元素}}\n- 禁止元素：{{禁止元素}}\n\n请输出一段清晰、具体、可直接用于生成图片的描述。',
+      category: '图像生成',
+      order: 31,
+      pinned: false,
+      usageCount: 0,
+      lastUsedAt: null,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      conversationMode: {
+        newChat: '请根据以下要求生成适合 DALL·E 的高质量图像描述：\n- 画面主题：{{画面主题}}\n- 风格参考：{{风格参考}}\n- 色彩氛围：{{色彩氛围}}\n- 重点元素：{{重点元素}}\n- 禁止元素：{{禁止元素}}\n\n请输出一段清晰、具体、可直接用于生成图片的描述。',
+        ongoing: '请继续优化上述 DALL·E 图像描述'
+      },
+      displayPreview: '🖼️ DALL·E 提示词'
     }
   ],
-  categories: ['日常', '工作', '学习', '生活', '写作', '翻译', '代码'],
+  categories: ['日常', '工作', '学习', '生活', '写作', '翻译', '代码', '产品运营', '数据分析', '社交媒体', '图像生成', '其他'],
   settings: {
     showFloatingButton: false,
     enableSlashCommand: true,

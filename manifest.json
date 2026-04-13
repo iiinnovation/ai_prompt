@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "AI Prompt 模板助手",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "管理常用 Prompt 模板，在主流 AI 平台上一键注入到输入框",
   "icons": {
     "16": "icons/icon16.png",
@@ -28,7 +28,14 @@
         "https://gemini.google.com/*",
         "https://chat.deepseek.com/*",
         "https://kimi.moonshot.cn/*",
-        "https://tongyi.aliyun.com/*"
+        "https://tongyi.aliyun.com/*",
+        "https://claude.ai/*",
+        "https://perplexity.ai/*",
+        "https://www.perplexity.ai/*",
+        "https://grok.com/*",
+        "https://x.com/i/grok*",
+        "https://doubao.com/*",
+        "https://www.doubao.com/*"
       ],
       "js": ["content/platforms.js", "content/content.js"],
       "css": ["content/content.css"]
@@ -45,7 +52,14 @@
     "https://gemini.google.com/*",
     "https://chat.deepseek.com/*",
     "https://kimi.moonshot.cn/*",
-    "https://tongyi.aliyun.com/*"
+    "https://tongyi.aliyun.com/*",
+    "https://claude.ai/*",
+    "https://perplexity.ai/*",
+    "https://www.perplexity.ai/*",
+    "https://grok.com/*",
+    "https://x.com/i/grok*",
+    "https://doubao.com/*",
+    "https://www.doubao.com/*"
   ],
   "commands": {
     "show-quick-panel": {
